@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Book Flight')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-header">
+    <div class="container">
+        <h1>🎫 Book Your Flight</h1>
+        <p>Confirm your details and proceed to booking</p>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 32px;">
+    <div class="container" style="max-width: 800px;">
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            ⚠ <span th:text="${errorMessage}">Error</span>
+        </div>
+        <div th:if="${successMessage}" class="alert alert-success">
+            ✓ <span th:text="${successMessage}">Success</span>
+        </div>
+
+        <!-- Flight is Full -->
+        <div th:if="${isFull}" class="card" style="text-align: center; padding: 48px;">
+            <div style="font-size: 3rem; margin-bottom: 16px;">😞</div>
+            <h3>This Flight is Fully Booked</h3>
+            <p style="color: var(--gray-500); margin-top: 8px;">
+                Flight <strong th:text="${flight.flightNumber}">AC101</strong> has no seats available.
+                Please try another date or flight.
+            </p>
+            <a th:href="@{/flights}" class="btn btn-primary mt-3">Search Other Flights</a>
+        </div>
+
+        <!-- Booking Form -->
+        <div th:unless="${isFull}">
+            <!-- Flight Summary Card -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">Flight Details</h3>
+
+                    <div class="flight-route" style="margin-bottom: 20px;">
+                        <div class="route-city">
+                            <div class="city-code" th:text="${flight.fromCity}">Delhi</div>
+                            <div class="city-name" th:text="${flight.departure}">08:00</div>
+                        </div>
+                        <div class="route-line">
+                            <span class="plane-icon">✈</span>
+                        </div>
+                        <div class="route-city">
+                            <div class="city-code" th:text="${flight.toCity}">Mumbai</div>
+                            <div class="city-name" th:text="${flight.arrival}">10:00</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                        <div>
+                            <div style="font-size: 0.72rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px;">Flight</div>
+                            <div style="font-weight: 600;" th:text="${flight.flightNumber}">AC101</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.72rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px;">Date</div>
+                            <div style="font-weight: 600;" th:text="${flight.date}">01-07-2024</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.72rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px;">Aircraft</div>
+                            <div style="font-weight: 600;" th:text="${flight.aircraft}">Boeing 737</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.72rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px;">Type</div>
+                            <span class="badge"
+                                  th:classappend="${flight.type.equalsIgnoreCase('International')} ? 'badge-warning' : 'badge-primary'"
+                                  th:text="${flight.type}">Domestic</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passenger & Payment -->
+            <div class="card">
+                <div class="card-body">
+                    <h3 style="margin-bottom: 20px; font-size: 1.1rem;">Passenger Information</h3>
+
+                    <form th:action="@{/book/{id}(id=${flight.id})}" method="post">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" th:value="${passenger?.name}" disabled
+                                       style="background: var(--gray-50);">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" class="form-control" th:value="${passenger?.email}" disabled
+                                       style="background: var(--gray-50);">
+                            </div>
+                            <div class="form-group">
+                                <label>Age</label>
+                                <input type="text" class="form-control" th:value="${passenger?.age}" disabled
+                                       style="background: var(--gray-50);">
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile</label>
+                                <input type="text" class="form-control" th:value="${passenger?.mobileNum}" disabled
+                                       style="background: var(--gray-50);">
+                            </div>
+                        </div>
+
+                        <!-- Passport for International -->
+                        <div th:if="${isInternational}" class="form-group">
+                            <label for="passportNum">Passport Number (8-digit) *</label>
+                            <input type="number" id="passportNum" name="passportNum" class="form-control"
+                                   placeholder="Enter 8-digit passport number"
+                                   th:value="${passenger?.passportNum != 0 ? passenger.passportNum : ''}"
+                                   min="10000000" max="99999999" required>
+                            <small style="color: var(--gray-400); font-size: 0.78rem;">
+                                Required for international flights
+                            </small>
+                        </div>
+
+                        <!-- Price Summary -->
+                        <div style="background: var(--gray-50); border-radius: var(--radius-lg); padding: 24px; margin-top: 20px;">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div style="font-size: 0.82rem; color: var(--gray-500);">Total Ticket Price</div>
+                                    <div style="font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; color: var(--primary-600);"
+                                         th:text="'₹' + ${#numbers.formatDecimal(ticketPrice, 0, 2)}">₹35,000.00</div>
+                                </div>
+                                <button type="submit" class="btn btn-accent btn-lg">
+                                    ✈ Confirm Booking
+                                </button>
+                            </div>
+                            <div style="margin-top: 12px; font-size: 0.78rem; color: var(--gray-400);">
+                                ⚠ Cancellation policy: 40% of ticket price will be charged as cancellation fee.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

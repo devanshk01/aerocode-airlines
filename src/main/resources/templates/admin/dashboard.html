@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin Dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="admin-layout">
+    <div class="container">
+        <div class="admin-header">
+            <div>
+                <h1>📊 Admin Dashboard</h1>
+                <p style="color: var(--gray-500);">Overview of AeroCode Airlines operations</p>
+            </div>
+            <span class="badge badge-primary" style="font-size: 0.85rem; padding: 8px 16px;">🔑 Administrator</span>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-4 stagger mb-4">
+            <div class="stat-card">
+                <div class="stat-icon blue">✈</div>
+                <div class="stat-value" th:text="${totalFlights}">100</div>
+                <div class="stat-label">Total Flights</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">🎫</div>
+                <div class="stat-value" th:text="${confirmedBookings}">50</div>
+                <div class="stat-label">Confirmed Bookings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon gold">💰</div>
+                <div class="stat-value" th:text="'₹' + ${#numbers.formatDecimal(totalRevenue, 0, 0)}">₹500,000</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon teal">👥</div>
+                <div class="stat-value" th:text="${totalPassengers}">25</div>
+                <div class="stat-label">Registered Passengers</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-4 mb-4">
+            <a th:href="@{/admin/passengers}" class="card" style="text-decoration: none;">
+                <div class="card-body text-center" style="padding: 20px;">
+                    <div style="font-size: 1.5rem; margin-bottom: 8px;">👥</div>
+                    <div style="font-weight: 600; color: var(--gray-800);">All Passengers</div>
+                    <div style="font-size: 0.78rem; color: var(--gray-500);">View sensitive data</div>
+                </div>
+            </a>
+            <a th:href="@{/admin/flights}" class="card" style="text-decoration: none;">
+                <div class="card-body text-center" style="padding: 20px;">
+                    <div style="font-size: 1.5rem; margin-bottom: 8px;">✈</div>
+                    <div style="font-weight: 600; color: var(--gray-800);">Manage Flights</div>
+                    <div style="font-size: 0.78rem; color: var(--gray-500);">Add, edit, delete</div>
+                </div>
+            </a>
+            <a th:href="@{/admin/bookings}" class="card" style="text-decoration: none;">
+                <div class="card-body text-center" style="padding: 20px;">
+                    <div style="font-size: 1.5rem; margin-bottom: 8px;">🎫</div>
+                    <div style="font-weight: 600; color: var(--gray-800);">All Bookings</div>
+                    <div style="font-size: 0.78rem; color: var(--gray-500);">Complete overview</div>
+                </div>
+            </a>
+            <a th:href="@{/aircraft}" class="card" style="text-decoration: none;">
+                <div class="card-body text-center" style="padding: 20px;">
+                    <div style="font-size: 1.5rem; margin-bottom: 8px;">🛩</div>
+                    <div style="font-weight: 600; color: var(--gray-800);">Fleet</div>
+                    <div style="font-size: 0.78rem; color: var(--gray-500);">Aircraft details</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="card">
+            <div class="card-header">
+                <h3 style="font-size: 1.1rem;">Recent Bookings</h3>
+                <a th:href="@{/admin/bookings}" class="btn btn-outline btn-sm">View All →</a>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Passenger</th>
+                        <th>Flight</th>
+                        <th>Route</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="booking : ${recentBookings}">
+                        <td th:text="'#' + ${T(java.lang.String).format('%06d', booking.id)}">#000001</td>
+                        <td th:text="${booking.passenger.name}">John Doe</td>
+                        <td th:text="${booking.flight.flightNumber}">AC101</td>
+                        <td th:text="${booking.flight.fromCity} + ' → ' + ${booking.flight.toCity}">Delhi → Mumbai</td>
+                        <td style="font-weight: 600;" th:text="'₹' + ${#numbers.formatDecimal(booking.ticketPrice, 0, 2)}">₹35,000</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${booking.status.name() == 'CONFIRMED'} ? 'badge-success' : 'badge-danger'"
+                                  th:text="${booking.status}">CONFIRMED</span>
+                        </td>
+                        <td th:text="${#temporals.format(booking.bookingTime, 'dd MMM yyyy')}">01 Jul 2024</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Our Fleet')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-header">
+    <div class="container">
+        <h1>🛩 Our Aircraft Fleet</h1>
+        <p>Experience world-class comfort on our modern fleet</p>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 32px;">
+    <div class="container">
+        <div class="grid grid-3 stagger">
+            <div th:each="ac : ${aircraftList}" class="card aircraft-card">
+                <div class="aircraft-icon">
+                    <span th:if="${ac.name.contains('Boeing')}">🛫</span>
+                    <span th:unless="${ac.name.contains('Boeing')}">🛬</span>
+                </div>
+                <h3 th:text="${ac.name}">Boeing 747</h3>
+
+                <div class="aircraft-specs">
+                    <div class="aircraft-spec">
+                        <div class="spec-label">Passengers</div>
+                        <div class="spec-value" th:text="${ac.passengerCapacity}">450</div>
+                    </div>
+                    <div class="aircraft-spec">
+                        <div class="spec-label">Crew</div>
+                        <div class="spec-value" th:text="${ac.crewCapacity}">20</div>
+                    </div>
+                    <div class="aircraft-spec">
+                        <div class="spec-label">Max Weight</div>
+                        <div class="spec-value" th:text="${#numbers.formatDecimal(ac.totalMaxWeightCapacity, 0, 0)} + ' kg'">412,000 kg</div>
+                    </div>
+                    <div class="aircraft-spec">
+                        <div class="spec-label">Fuel Rate</div>
+                        <div class="spec-value" th:text="${#numbers.formatDecimal(ac.fuelConsumption, 0, 0)} + ' L/km'">12 L/km</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

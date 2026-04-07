@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Add Flight')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="admin-layout">
+    <div class="container" style="max-width: 700px;">
+        <div class="admin-header">
+            <h1>+ Add New Flight</h1>
+            <a th:href="@{/admin/flights}" class="btn btn-outline btn-sm">← Back</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/admin/flights/add}" method="post" th:object="${flight}">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label>Flight Number</label>
+                            <input type="text" class="form-control" th:field="*{flightNumber}"
+                                   placeholder="e.g. AC301" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="text" class="form-control" th:field="*{date}"
+                                   placeholder="dd-mm-yyyy" required>
+                        </div>
+                        <div class="form-group">
+                            <label>From</label>
+                            <input type="text" class="form-control" th:field="*{fromCity}"
+                                   placeholder="e.g. Delhi" required>
+                        </div>
+                        <div class="form-group">
+                            <label>To</label>
+                            <input type="text" class="form-control" th:field="*{toCity}"
+                                   placeholder="e.g. Mumbai" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Departure Time</label>
+                            <input type="text" class="form-control" th:field="*{departure}"
+                                   placeholder="HH:MM" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Arrival Time</label>
+                            <input type="text" class="form-control" th:field="*{arrival}"
+                                   placeholder="HH:MM" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Aircraft</label>
+                            <select class="form-control" th:field="*{aircraft}" required>
+                                <option value="">Select Aircraft</option>
+                                <option th:each="ac : ${aircraft}" th:value="${ac.name}" th:text="${ac.name}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Flight Type</label>
+                            <select class="form-control" th:field="*{type}" required>
+                                <option value="">Select Type</option>
+                                <option value="Domestic">Domestic</option>
+                                <option value="International">International</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Distance (kms)</label>
+                            <input type="number" class="form-control" th:field="*{distance}"
+                                   placeholder="e.g. 1147" required step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Flight Duration</label>
+                            <input type="text" class="form-control" th:field="*{flightDuration}"
+                                   placeholder="e.g. 2 hr 15 min" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-full mt-2">Add Flight</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage Flights')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="admin-layout">
+    <div class="container">
+        <div class="admin-header">
+            <div>
+                <h1>✈ Manage Flights</h1>
+                <p style="color: var(--gray-500);" th:text="'Total: ' + ${#lists.size(flights)} + ' flights'">Total: 100 flights</p>
+            </div>
+            <div class="flex gap-2">
+                <a th:href="@{/admin/dashboard}" class="btn btn-outline btn-sm">← Dashboard</a>
+                <a th:href="@{/admin/flights/add}" class="btn btn-primary btn-sm">+ Add Flight</a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            ✓ <span th:text="${successMessage}">Success</span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            ⚠ <span th:text="${errorMessage}">Error</span>
+        </div>
+
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Flight #</th>
+                        <th>Date</th>
+                        <th>Route</th>
+                        <th>Times</th>
+                        <th>Aircraft</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="f : ${flights}">
+                        <td style="font-weight: 600;" th:text="${f.flightNumber}">AC101</td>
+                        <td th:text="${f.date}">01-07-2024</td>
+                        <td th:text="${f.fromCity} + ' → ' + ${f.toCity}">Delhi → Mumbai</td>
+                        <td th:text="${f.departure} + ' - ' + ${f.arrival}">08:00 - 10:00</td>
+                        <td th:text="${f.aircraft}">Boeing 737</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${f.type.equalsIgnoreCase('International')} ? 'badge-warning' : 'badge-primary'"
+                                  th:text="${f.type}">Domestic</span>
+                        </td>
+                        <td style="font-weight: 600;" th:text="'₹' + ${#numbers.formatDecimal(flightService.calculateTicketPrice(f), 0, 0)}">₹35,000</td>
+                        <td>
+                            <form th:action="@{/admin/flights/delete/{id}(id=${f.id})}" method="post" style="margin:0;">
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        data-confirm="Are you sure you want to delete this flight?">🗑</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

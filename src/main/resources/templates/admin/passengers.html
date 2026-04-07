@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('All Passengers')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="admin-layout">
+    <div class="container">
+        <div class="admin-header">
+            <div>
+                <h1>👥 All Passengers</h1>
+                <p style="color: var(--gray-500);">Sensitive data – Admin access only</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline btn-sm">← Dashboard</a>
+        </div>
+
+        <div class="alert alert-warning" style="margin-bottom: 24px;">
+            🔒 This page contains sensitive personal information (phone numbers, emails, passport numbers). Access is restricted to administrators only.
+        </div>
+
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Mobile Number</th>
+                        <th>Email</th>
+                        <th>Passport</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${passengers}">
+                        <td th:text="${p.id}">1</td>
+                        <td>
+                            <div style="font-weight: 600;" th:text="${p.name}">John Doe</div>
+                        </td>
+                        <td th:text="${p.age}">25</td>
+                        <td th:text="${p.gender}">Male</td>
+                        <td style="font-family: monospace;" th:text="${p.mobileNum}">9876543210</td>
+                        <td th:text="${p.email}">john@example.com</td>
+                        <td>
+                            <span th:if="${p.passportNum != 0}" style="font-family: monospace;" th:text="${p.passportNum}">12345678</span>
+                            <span th:if="${p.passportNum == 0}" class="badge badge-warning">N/A</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

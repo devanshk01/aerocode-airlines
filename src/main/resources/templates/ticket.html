@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Your Ticket')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="ticket-container animate-fade-in">
+    <div class="ticket">
+        <div class="ticket-header">
+            <div style="font-size: 1.5rem; margin-bottom: 8px;">✈</div>
+            <h2>AeroCode Airlines</h2>
+            <div class="booking-id" th:text="'Booking #' + ${T(java.lang.String).format('%06d', booking.id)}">
+                Booking #000001
+            </div>
+            <div class="mt-2">
+                <span class="badge"
+                      th:classappend="${booking.status.name() == 'CONFIRMED'} ? 'badge-success' : 'badge-danger'"
+                      th:text="${booking.status}" style="font-size: 0.85rem; padding: 6px 16px;">CONFIRMED</span>
+            </div>
+        </div>
+
+        <div class="ticket-body">
+            <!-- Route Display -->
+            <div class="ticket-route">
+                <div class="route-point">
+                    <div class="city" th:text="${booking.flight.fromCity}">Delhi</div>
+                    <div class="time" th:text="${booking.flight.departure}">08:00</div>
+                </div>
+                <div class="route-middle">
+                    <div class="plane">✈</div>
+                    <div class="duration" th:text="${booking.flight.flightDuration}">2 hr 15 min</div>
+                </div>
+                <div class="route-point">
+                    <div class="city" th:text="${booking.flight.toCity}">Mumbai</div>
+                    <div class="time" th:text="${booking.flight.arrival}">10:00</div>
+                </div>
+            </div>
+
+            <!-- Details Grid -->
+            <div class="ticket-details">
+                <div class="ticket-detail-item">
+                    <div class="detail-label">Passenger Name</div>
+                    <div class="detail-value" th:text="${booking.passenger.name}">John Doe</div>
+                </div>
+                <div class="ticket-detail-item">
+                    <div class="detail-label">Flight Number</div>
+                    <div class="detail-value" th:text="${booking.flight.flightNumber}">AC101</div>
+                </div>
+                <div class="ticket-detail-item">
+                    <div class="detail-label">Date</div>
+                    <div class="detail-value" th:text="${booking.flight.date}">01-07-2024</div>
+                </div>
+                <div class="ticket-detail-item">
+                    <div class="detail-label">Aircraft</div>
+                    <div class="detail-value" th:text="${booking.flight.aircraft}">Boeing 737</div>
+                </div>
+                <div class="ticket-detail-item">
+                    <div class="detail-label">Flight Type</div>
+                    <div class="detail-value" th:text="${booking.flight.type}">Domestic</div>
+                </div>
+                <div class="ticket-detail-item">
+                    <div class="detail-label">Distance</div>
+                    <div class="detail-value" th:text="${#numbers.formatDecimal(booking.flight.distance, 0, 0)} + ' kms'">1147 kms</div>
+                </div>
+                <div class="ticket-detail-item">
+                    <div class="detail-label">Gender</div>
+                    <div class="detail-value" th:text="${booking.passenger.gender}">Male</div>
+                </div>
+                <div class="ticket-detail-item">
+                    <div class="detail-label">Booking Time</div>
+                    <div class="detail-value" th:text="${#temporals.format(booking.bookingTime, 'dd MMM yyyy, HH:mm')}">01 Jul 2024, 08:00</div>
+                </div>
+                <div th:if="${booking.flight.type.equalsIgnoreCase('International') && booking.passenger.passportNum != 0}" class="ticket-detail-item">
+                    <div class="detail-label">Passport Number</div>
+                    <div class="detail-value" th:text="${booking.passenger.passportNum}">12345678</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticket-footer">
+            <div>
+                <div class="total-label">Total Paid</div>
+                <div class="total-price" th:text="'₹' + ${#numbers.formatDecimal(booking.ticketPrice, 0, 2)}">₹35,000.00</div>
+            </div>
+            <a th:href="@{/export/ticket/{id}(id=${booking.id})}" class="btn btn-primary">
+                📄 Download Ticket
+            </a>
+        </div>
+    </div>
+
+    <div class="text-center mt-3">
+        <a th:href="@{/my-bookings}" class="btn btn-outline">← Back to My Bookings</a>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

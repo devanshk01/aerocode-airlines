@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('All Bookings')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="admin-layout">
+    <div class="container">
+        <div class="admin-header">
+            <div>
+                <h1>🎫 All Bookings</h1>
+                <p style="color: var(--gray-500);" th:text="'Total: ' + ${#lists.size(bookings)} + ' bookings'">Total: 50 bookings</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline btn-sm">← Dashboard</a>
+        </div>
+
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Passenger</th>
+                        <th>Flight</th>
+                        <th>Route</th>
+                        <th>Date</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Booked On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="b : ${bookings}">
+                        <td style="font-weight: 600;" th:text="'#' + ${T(java.lang.String).format('%06d', b.id)}">#000001</td>
+                        <td th:text="${b.passenger.name}">John Doe</td>
+                        <td th:text="${b.flight.flightNumber}">AC101</td>
+                        <td th:text="${b.flight.fromCity} + ' → ' + ${b.flight.toCity}">Delhi → Mumbai</td>
+                        <td th:text="${b.flight.date}">01-07-2024</td>
+                        <td style="font-weight: 600;" th:text="'₹' + ${#numbers.formatDecimal(b.ticketPrice, 0, 2)}">₹35,000</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${b.status.name() == 'CONFIRMED'} ? 'badge-success' : 'badge-danger'"
+                                  th:text="${b.status}">CONFIRMED</span>
+                        </td>
+                        <td th:text="${#temporals.format(b.bookingTime, 'dd MMM yyyy HH:mm')}">01 Jul 2024 08:00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

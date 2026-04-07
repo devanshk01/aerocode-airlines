@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Bookings')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-header">
+    <div class="container">
+        <h1>🎫 My Bookings</h1>
+        <p>View and manage your flight reservations</p>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 32px;">
+    <div class="container">
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            ✓ <span th:text="${successMessage}">Success</span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            ⚠ <span th:text="${errorMessage}">Error</span>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${bookings == null || #lists.isEmpty(bookings)}" class="empty-state">
+            <div class="empty-icon">🎫</div>
+            <h3>No bookings yet</h3>
+            <p>You haven't booked any flights. Start exploring!</p>
+            <a th:href="@{/flights}" class="btn btn-primary mt-2">Search Flights</a>
+        </div>
+
+        <!-- Bookings List -->
+        <div th:unless="${bookings == null || #lists.isEmpty(bookings)}" class="grid grid-2 stagger">
+            <div th:each="booking : ${bookings}" class="card">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span style="font-size: 0.78rem; color: var(--gray-400);">Booking</span>
+                            <span style="font-weight: 700; color: var(--gray-800);"
+                                  th:text="'#' + ${T(java.lang.String).format('%06d', booking.id)}">
+                                #000001</span>
+                        </div>
+                        <span class="badge"
+                              th:classappend="${booking.status.name() == 'CONFIRMED'} ? 'badge-success' : 'badge-danger'"
+                              th:text="${booking.status}">CONFIRMED</span>
+                    </div>
+
+                    <div class="flight-route" style="margin: 16px 0;">
+                        <div class="route-city">
+                            <div class="city-code" th:text="${booking.flight.fromCity}">Delhi</div>
+                            <div class="city-name" th:text="${booking.flight.departure}">08:00</div>
+                        </div>
+                        <div class="route-line">
+                            <span class="plane-icon">✈</span>
+                        </div>
+                        <div class="route-city">
+                            <div class="city-code" th:text="${booking.flight.toCity}">Mumbai</div>
+                            <div class="city-name" th:text="${booking.flight.arrival}">10:00</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 0.82rem; margin-bottom: 16px;">
+                        <div>
+                            <div style="color: var(--gray-400);">Flight</div>
+                            <div style="font-weight: 600;" th:text="${booking.flight.flightNumber}">AC101</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray-400);">Date</div>
+                            <div style="font-weight: 600;" th:text="${booking.flight.date}">01-07-2024</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray-400);">Price</div>
+                            <div style="font-weight: 700; color: var(--primary-600);"
+                                 th:text="'₹' + ${#numbers.formatDecimal(booking.ticketPrice, 0, 2)}">₹35,000</div>
+                        </div>
+                    </div>
+
+                    <div th:if="${booking.status.name() == 'CANCELLED'}"
+                         style="background: var(--danger-100); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 12px; font-size: 0.82rem;">
+                        <div style="color: var(--danger-500); font-weight: 600;">Cancelled</div>
+                        <div style="color: #991B1B;"
+                             th:text="'Refund: ₹' + ${#numbers.formatDecimal(booking.refundAmount, 0, 2)}">Refund: ₹21,000</div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <a th:href="@{/ticket/{id}(id=${booking.id})}" class="btn btn-outline btn-sm">View Ticket</a>
+                        <a th:href="@{/export/ticket/{id}(id=${booking.id})}" class="btn btn-outline btn-sm">📄 Download</a>
+                        <form th:if="${booking.status.name() == 'CONFIRMED'}"
+                              th:action="@{/cancel/{id}(id=${booking.id})}" method="post" style="margin:0;">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    data-confirm="Are you sure you want to cancel this booking? A 40% cancellation fee will apply.">
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

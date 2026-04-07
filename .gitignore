@@ -1,0 +1,47 @@
+# ============================
+# AeroCode Airlines .gitignore
+# ============================
+
+# Compiled class files
+target/
+*.class
+*.jar
+*.war
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# H2 Database files (local dev data)
+data/*.db
+data/*.mv.db
+data/*.trace.db
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+*.env
+
+# Build artifacts
+build/
+out/
+bin/

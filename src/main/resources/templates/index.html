@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="animate-fade-in">
+            Fly Beyond Limits with<br>
+            <span class="highlight">AeroCode Airlines</span>
+        </h1>
+        <p class="animate-fade-in" style="animation-delay: 0.15s;">
+            Discover seamless booking, world-class comfort, and destinations across the globe.
+            Your journey starts here.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px; animation: fadeInUp 0.5s ease-out 0.3s both;">
+            <a th:href="@{/flights}" class="btn btn-accent btn-lg">Search Flights ✈</a>
+            <a th:href="@{/aircraft}" class="btn btn-outline btn-lg" style="color: white; border-color: rgba(255,255,255,0.4);">View Fleet</a>
+        </div>
+
+        <div class="hero-stats" style="animation: fadeInUp 0.5s ease-out 0.5s both;">
+            <div class="hero-stat">
+                <span class="stat-number" th:attr="data-count=${flightCount}" th:text="${flightCount}">100</span>
+                <span class="stat-label">Scheduled Flights</span>
+            </div>
+            <div class="hero-stat">
+                <span class="stat-number" th:attr="data-count=${destinationCount}" th:text="${destinationCount}">15</span>
+                <span class="stat-label">Destinations</span>
+            </div>
+            <div class="hero-stat">
+                <span class="stat-number" data-count="6">6</span>
+                <span class="stat-label">Aircraft Models</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Box -->
+<div class="container">
+    <div class="search-box">
+        <form th:action="@{/flights}" method="get" class="search-form">
+            <div class="search-field">
+                <label>From</label>
+                <select name="from" class="form-control">
+                    <option value="">Any City</option>
+                    <option th:each="city : ${departureCities}" th:value="${city}" th:text="${city}"></option>
+                </select>
+            </div>
+            <div class="search-field">
+                <label>To</label>
+                <select name="to" class="form-control">
+                    <option value="">Any City</option>
+                    <option th:each="city : ${arrivalCities}" th:value="${city}" th:text="${city}"></option>
+                </select>
+            </div>
+            <div class="search-field">
+                <label>Type</label>
+                <select name="type" class="form-control">
+                    <option value="">All Types</option>
+                    <option value="Domestic">Domestic</option>
+                    <option value="International">International</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary btn-lg">🔍 Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Featured Flights -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured Flights</h2>
+            <p>Popular routes handpicked for you</p>
+        </div>
+        <div class="grid grid-3 stagger">
+            <div th:each="flight : ${featuredFlights}" class="card flight-card">
+                <div class="card-body">
+                    <span class="flight-type-badge"
+                          th:classappend="${flight.type.equalsIgnoreCase('International')} ? 'international' : 'domestic'"
+                          th:text="${flight.type}">Domestic</span>
+
+                    <div style="font-size: 0.82rem; color: var(--gray-500); margin-bottom: 4px;">
+                        <span th:text="${flight.flightNumber}">AC101</span> · <span th:text="${flight.date}">01-07-2024</span>
+                    </div>
+
+                    <div class="flight-route">
+                        <div class="route-city">
+                            <div class="city-code" th:text="${flight.fromCity}">Delhi</div>
+                            <div class="city-name" th:text="${flight.departure}">08:00</div>
+                        </div>
+                        <div class="route-line">
+                            <span class="plane-icon">✈</span>
+                        </div>
+                        <div class="route-city">
+                            <div class="city-code" th:text="${flight.toCity}">Mumbai</div>
+                            <div class="city-name" th:text="${flight.arrival}">10:00</div>
+                        </div>
+                    </div>
+
+                    <div class="flight-meta">
+                        <div class="meta-item">
+                            <strong th:text="${flight.flightDuration}">2 hr 15 min</strong>
+                            Duration
+                        </div>
+                        <div class="meta-item">
+                            <strong th:text="${flight.aircraft}">Boeing 737</strong>
+                            Aircraft
+                        </div>
+                        <div class="flight-price">
+                            <span class="price-label">from</span>
+                            <span class="price-value" th:text="'₹' + ${#numbers.formatDecimal(flightService.calculateTicketPrice(flight), 0, 0)}">₹35,000</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <a th:href="@{/book/{id}(id=${flight.id})}" class="btn btn-primary btn-sm w-full">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/flights}" class="btn btn-outline btn-lg">View All Flights →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="section section-dark">
+    <div class="container">
+        <div class="section-header">
+            <h2>Why Choose AeroCode Airlines</h2>
+            <p>We deliver excellence across every touchpoint</p>
+        </div>
+        <div class="grid grid-3 stagger">
+            <div class="card" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                <div class="card-body text-center" style="padding: 36px 24px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 16px;">🛡️</div>
+                    <h3 style="color: var(--white); margin-bottom: 12px;">Secure Booking</h3>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">BCrypt-encrypted passwords, role-based access control, and secure data handling.</p>
+                </div>
+            </div>
+            <div class="card" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                <div class="card-body text-center" style="padding: 36px 24px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 16px;">🌏</div>
+                    <h3 style="color: var(--white); margin-bottom: 12px;">Global Destinations</h3>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">From domestic routes to international gateways – Dubai, London, Tokyo, Sydney, and more.</p>
+                </div>
+            </div>
+            <div class="card" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                <div class="card-body text-center" style="padding: 36px 24px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 16px;">📄</div>
+                    <h3 style="color: var(--white); margin-bottom: 12px;">Instant Tickets</h3>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Download your e-ticket as a formatted text file instantly after booking.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

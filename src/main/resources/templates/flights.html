@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Search Flights')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-header">
+    <div class="container">
+        <h1>✈ Search Flights</h1>
+        <p>Find the perfect flight for your journey</p>
+    </div>
+</div>
+
+<div class="container" style="padding: 0 2rem;">
+    <div class="search-box" style="margin-top: -30px;">
+        <form th:action="@{/flights}" method="get" class="search-form">
+            <div class="search-field">
+                <label>From</label>
+                <select name="from" class="form-control">
+                    <option value="">Any City</option>
+                    <option th:each="city : ${departureCities}" th:value="${city}" th:text="${city}"
+                            th:selected="${city == searchFrom}"></option>
+                </select>
+            </div>
+            <div class="search-field">
+                <label>To</label>
+                <select name="to" class="form-control">
+                    <option value="">Any City</option>
+                    <option th:each="city : ${arrivalCities}" th:value="${city}" th:text="${city}"
+                            th:selected="${city == searchTo}"></option>
+                </select>
+            </div>
+            <div class="search-field">
+                <label>Date</label>
+                <input type="text" name="date" class="form-control" placeholder="dd-mm-yyyy"
+                       th:value="${searchDate}">
+            </div>
+            <div class="search-field">
+                <label>Type</label>
+                <select name="type" class="form-control">
+                    <option value="">All</option>
+                    <option value="Domestic" th:selected="${searchType == 'Domestic'}">Domestic</option>
+                    <option value="International" th:selected="${searchType == 'International'}">International</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="btn btn-primary">🔍 Search</button>
+                <a th:href="@{/flights}" class="btn btn-outline search-clear">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<section class="section" style="padding-top: 24px;">
+    <div class="container">
+        <div th:if="${searched}" class="mb-3" style="color: var(--gray-500); font-size: 0.9rem;">
+            Found <strong th:text="${#lists.size(flights)}">0</strong> flight(s) matching your search
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(flights)}" class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <h3>No flights found</h3>
+            <p>Try adjusting your search filters or browse all flights.</p>
+            <a th:href="@{/flights}" class="btn btn-primary mt-2">View All Flights</a>
+        </div>
+
+        <!-- Flights Grid -->
+        <div th:unless="${#lists.isEmpty(flights)}" class="grid grid-3 stagger">
+            <div th:each="flight : ${flights}" class="card flight-card">
+                <div class="card-body">
+                    <span class="flight-type-badge"
+                          th:classappend="${flight.type.equalsIgnoreCase('International')} ? 'international' : 'domestic'"
+                          th:text="${flight.type}">Domestic</span>
+
+                    <div style="font-size: 0.82rem; color: var(--gray-500); margin-bottom: 4px;">
+                        <span th:text="${flight.flightNumber}">AC101</span> · <span th:text="${flight.date}">01-07-2024</span>
+                    </div>
+
+                    <div class="flight-route">
+                        <div class="route-city">
+                            <div class="city-code" th:text="${flight.fromCity}">Delhi</div>
+                            <div class="city-name" th:text="${flight.departure}">08:00</div>
+                        </div>
+                        <div class="route-line">
+                            <span class="plane-icon">✈</span>
+                        </div>
+                        <div class="route-city">
+                            <div class="city-code" th:text="${flight.toCity}">Mumbai</div>
+                            <div class="city-name" th:text="${flight.arrival}">10:00</div>
+                        </div>
+                    </div>
+
+                    <div class="flight-meta">
+                        <div class="meta-item">
+                            <strong th:text="${flight.flightDuration}">2 hr 15 min</strong>
+                            Duration
+                        </div>
+                        <div class="flight-price">
+                            <span class="price-label">from</span>
+                            <span class="price-value" th:text="'₹' + ${#numbers.formatDecimal(flightService.calculateTicketPrice(flight), 0, 0)}">₹35,000</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
+                        <a th:href="@{/book/{id}(id=${flight.id})}" class="btn btn-primary btn-sm w-full">Book This Flight</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

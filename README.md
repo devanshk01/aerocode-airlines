@@ -1,19 +1,87 @@
-# ✈️ AeroCode Airlines – Java Console-Based Airline Management System
+# ✈️ AeroCode Airlines – Full-Stack Airline Management System
+
+> A production-ready airline management web application built with **Java 17+**, **Spring Boot 3.4**, **Thymeleaf**, **Spring Security**, and **H2/MySQL**.
+
+---
 
 ## 📌 Project Overview
 
-**AeroCode Airlines** is a console-based Java application that simulates a simplified airline reservation and management system. The system provides an interactive user interface in the terminal using colored prompts and structured menus. Data is stored and retrieved from CSV files, allowing persistent storage without databases.
+**AeroCode Airlines** is a full-stack web application that simulates a complete airline booking and management system. Originally developed as a console-based Java application during my OOP course at DA-IICT, it has been upgraded to a deployable, production-ready Spring Boot web application featuring:
+
+- 🗄 **Relational database** (H2 for development, MySQL for production)
+- 🔐 **Role-based security** (Admin vs. Passenger roles with BCrypt encryption)
+- 🎨 **Premium modern UI** with responsive design and animations
+- 📄 **Ticket export** to downloadable `.txt` files
+- 📊 **Admin dashboard** with real-time analytics
 
 ---
 
 ## 🎯 Features
 
-- 🔍 View available airline details
-- 🎫 Book, view, and cancel flight tickets
-- 👤 Manage passenger data
-- 📦 Read/write persistent data using `.csv` files
-- 🌈 Colored console outputs for enhanced UX
-- 🧹 Clean modular code using object-oriented principles
+### Public Access
+- 🔍 Search & filter flights by origin, destination, date, and type
+- 🛩 Browse the entire aircraft fleet with specifications
+- 📝 Register a new account
+
+### Authenticated Users (Passengers)
+- 🎫 Book flights with real-time pricing
+- 📋 View and manage all bookings
+- 🎟 View boarding-pass style tickets
+- 📄 Download tickets as `.txt` files
+- ❌ Cancel bookings (40% cancellation fee policy)
+
+### Admin Only
+- 📊 Analytics dashboard (flights, bookings, revenue, passengers)
+- 👥 View all passenger data including sensitive info (phone, email, passport)
+- ✈ Add/delete flights
+- 📋 View all system bookings
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+| Tool | Version |
+|------|---------|
+| Java JDK | 17+ |
+| Apache Maven | 3.8+ |
+
+### Run the Application
+```bash
+# Clone the repo
+git clone https://github.com/YOUR_USERNAME/AeroCode_airlines.git
+cd AeroCode_airlines
+
+# Set JAVA_HOME if needed (Windows PowerShell)
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-XX"
+
+# Build and run
+mvn spring-boot:run
+```
+
+Open **http://localhost:8080** in your browser.
+
+### Default Credentials
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `admin123` |
+| Passenger | `devansh.kukadia` | `password123` |
+
+> See [SETUP_AND_RUN.md](SETUP_AND_RUN.md) for detailed setup instructions.
+
+---
+
+## 🏗 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Language | Java 17+ |
+| Framework | Spring Boot 3.4 |
+| Frontend | Thymeleaf + Custom CSS + JavaScript |
+| Security | Spring Security 6 (BCrypt, RBAC) |
+| Database | H2 (dev) / MySQL 8 (prod) |
+| ORM | Spring Data JPA / Hibernate |
+| Build | Apache Maven |
 
 ---
 
@@ -21,82 +89,66 @@
 
 ```
 AeroCode_airlines/
-│
-├── AeroCode_Airlines_main.java     # Main application logic
-├── Colours.java                    # Console color helper class
-├── airline_data.csv                # Stores flight data
-├── passenger_data.csv              # Stores passenger data
+├── src/main/java/com/aerocode/airlines/
+│   ├── AerocodeAirlinesApplication.java     # Spring Boot entry point
+│   ├── config/                               # Security, Auth, DataLoader
+│   ├── model/                                # JPA Entities
+│   ├── repository/                           # Spring Data JPA interfaces
+│   ├── service/                              # Business logic
+│   └── controller/                           # MVC Controllers
+├── src/main/resources/
+│   ├── templates/                            # Thymeleaf HTML pages
+│   ├── static/css/style.css                  # Premium design system
+│   ├── static/js/main.js                     # UI interactions
+│   ├── data/                                 # CSV seed data
+│   └── application.properties               # Configuration
+├── AeroCode_Airlines_main.java               # Original console version
+├── pom.xml                                   # Maven dependencies
+├── SETUP_AND_RUN.md                          # Detailed setup guide
+└── README.md
 ```
 
 ---
 
-## 🧑‍💻 How to Run
+## 🔐 Security Architecture
 
-### ✅ Prerequisites:
-- Java JDK 8 or above
-- Command-line terminal (Linux/macOS/Windows)
-
-### 🔧 Compilation
-
-1. Navigate to the project folder:
-   ```bash
-   cd AeroCode_airlines
-   ```
-
-2. Compile both Java files:
-   ```bash
-   javac Colours.java AeroCode_Airlines_main.java
-   ```
-
-3. Run the program from the PARENT directory:
-   ```bash
-   java AeroCode_airlines.AeroCode_Airlines_main
-   ```
+- **Authentication**: Form-based login with Spring Security
+- **Password Storage**: BCrypt hashing (no plaintext passwords)
+- **Authorization**: URL-based access control
+  - Public: `/`, `/flights`, `/aircraft`, `/login`, `/register`
+  - Authenticated: `/book/*`, `/my-bookings`, `/ticket/*`, `/export/*`
+  - Admin Only: `/admin/**`
+- **Data Privacy**: Sensitive passenger info (phone, email, passport) restricted to account owner & admin
 
 ---
 
-## 📁 Data Files
+## 💰 Business Logic (Preserved from Original)
 
-- `airline_data.csv`: Contains details of all flights (e.g., ID, source, destination, timings)
-- `passenger_data.csv`: Tracks booked passengers with ticket IDs, names, and associated flights
-
-Both files are read/written during runtime to persist information between sessions.
-
----
-
-## 🌈 Colours.java Utility
-
-To enhance visual clarity, `Colours.java` defines ANSI escape codes like:
-
-```java
-public static final String BLUE = "\u001B[34m";
-public static final String GREEN = "\u001B[32m";
-public static final String RESET = "\u001B[0m";
-```
-
-Used in print statements like:
-```java
-System.out.print(Colours.GREEN + "Enter your choice: " + Colours.RESET);
-```
+| Feature | Formula |
+|---------|---------|
+| **Ticket Pricing** | `(1120 × fuelConsumption × distance) / (passengerCapacity + crewCapacity)` |
+| **Cancellation Fee** | 40% of the original ticket price |
+| **Refund** | 60% of the original ticket price |
 
 ---
 
-## 📌 Sample Features Implemented
+## 📁 Data Migration
 
-- Menu-driven interface for:
-  - Adding/viewing airline data
-  - Booking/canceling tickets
-  - Searching flights by source/destination
-  - Exiting gracefully with thank-you message
+On first startup, the `DataLoader` automatically seeds the database from the original CSV files:
+- **6 aircraft** (Boeing 747, 777, 737, Airbus A380, A340, A320)
+- **100+ flights** from `airline_data.csv`
+- **8 passengers** from `passenger_data.csv` (with auto-created user accounts)
+- **1 admin account** (`admin` / `admin123`)
 
 ---
 
-## 🚀 Future Improvements
+## 📌 Original Console Version
 
-- Add login/authentication system
-- Integrate with a real database (e.g., MySQL)
-- GUI version using JavaFX or Swing
-- Online ticket booking via web interface
+The original console-based project files are preserved in the root directory:
+- `AeroCode_Airlines_main.java` – Original application logic
+- `Colours.java` – ANSI color utilities
+- `airline_data.csv` – Flight data
+- `passenger_data.csv` – Passenger data
 
 ---
 
@@ -110,4 +162,4 @@ DA-IICT, 2025
 
 ## 📜 License
 
-This project is for academic use only. Feel free to fork and modify with credits.
+This project is for academic and portfolio use. Feel free to fork and modify with credits.

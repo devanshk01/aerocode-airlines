@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AeroCode Airlines – Book flights, manage reservations, and travel with confidence.">
+    <title th:text="${title} + ' | AeroCode Airlines'">AeroCode Airlines</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navbar Fragment -->
+<nav class="navbar" th:fragment="navbar">
+    <div class="navbar-inner">
+        <a href="/" class="navbar-brand">
+            <span class="brand-icon">✈</span>
+            <span>Aero<span class="brand-accent">Code</span></span>
+        </a>
+
+        <button class="navbar-toggle" aria-label="Toggle navigation">☰</button>
+
+        <ul class="navbar-nav">
+            <li><a th:href="@{/}">🏠 Home</a></li>
+            <li><a th:href="@{/flights}">🔍 Flights</a></li>
+            <li><a th:href="@{/aircraft}">🛩 Fleet</a></li>
+
+            <li sec:authorize="isAuthenticated()">
+                <span class="nav-divider"></span>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a th:href="@{/my-bookings}">🎫 My Bookings</a>
+            </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin/dashboard}">⚙ Admin</a>
+            </li>
+        </ul>
+
+        <div class="navbar-actions">
+            <div sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn-nav btn-nav-outline">Log In</a>
+                <a th:href="@{/register}" class="btn-nav btn-nav-primary">Sign Up</a>
+            </div>
+            <div sec:authorize="isAuthenticated()" style="display:flex; align-items:center; gap:10px;">
+                <span style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">
+                    👤 <span sec:authentication="name">User</span>
+                </span>
+                <form th:action="@{/logout}" method="post" style="margin:0;">
+                    <button type="submit" class="btn-nav btn-nav-outline" style="cursor:pointer;">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Footer Fragment -->
+<footer class="footer" th:fragment="footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <h3>✈ AeroCode Airlines</h3>
+            <p>Your trusted partner for domestic and international air travel. Built with Java, Spring Boot, and passion for aviation.</p>
+        </div>
+        <div class="footer-links">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a th:href="@{/flights}">Search Flights</a></li>
+                <li><a th:href="@{/aircraft}">Our Fleet</a></li>
+                <li><a th:href="@{/my-bookings}">My Bookings</a></li>
+            </ul>
+        </div>
+        <div class="footer-links">
+            <h4>Support</h4>
+            <ul>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 AeroCode Airlines. Developed by Devansh Kukadia – DA-IICT. All rights reserved.</p>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
