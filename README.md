@@ -142,16 +142,6 @@ On first startup, the `DataLoader` automatically seeds the database from the ori
 
 ---
 
-## 📌 Original Console Version
-
-The original console-based project files are preserved in the root directory:
-- `AeroCode_Airlines_main.java` – Original application logic
-- `Colours.java` – ANSI color utilities
-- `airline_data.csv` – Flight data
-- `passenger_data.csv` – Passenger data
-
----
-
 ## 👤 Developed By
 
 **Devansh Kukadia**  
